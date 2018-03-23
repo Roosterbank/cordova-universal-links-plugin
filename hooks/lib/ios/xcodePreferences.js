@@ -185,7 +185,7 @@ function pathToEntitlementsFile() {
     projectName = configXmlHelper.getProjectName(),
     fileName = projectName + '.entitlements';
 
-  return path.join(projectName, 'Resources', fileName);
+  return path.join(projectName, fileName);
 }
 
 // endregion
