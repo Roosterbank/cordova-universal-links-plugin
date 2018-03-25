@@ -34,7 +34,7 @@ function run(ctx) {
 
   // if it does - rename it
   var oldEntitlementsFilePath = path.join(iosProjectFilePath, oldProjectName, 'Resources', oldProjectName + '.entitlements');
-  var newEntitlementsFilePath = path.join(iosProjectFilePath, oldProjectName, 'Resources', newProjectName + '.entitlements');
+  var newEntitlementsFilePath = path.join(iosProjectFilePath, oldProjectName, newProjectName + '.entitlements');
 
   try {
     fs.renameSync(oldEntitlementsFilePath, newEntitlementsFilePath);
