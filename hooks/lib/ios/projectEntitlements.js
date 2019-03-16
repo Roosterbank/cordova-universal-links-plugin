@@ -13,9 +13,6 @@ var mkpath = require('mkpath');
 var ConfigXmlHelper = require('../configXmlHelper.js');
 var ASSOCIATED_DOMAINS = 'com.apple.developer.associated-domains';
 var context;
-var projectRoot;
-var projectName;
-var entitlementsFilePath;
 
 module.exports = {
   generateAssociatedDomainsEntitlements: generateEntitlements
@@ -144,9 +141,7 @@ function domainsListEntryForHost(host) {
  * @return {String} absolute path to entitlements file
  */
 function pathToEntitlementsFile(type) {
-  if (entitlementsFilePath === undefined) {
-    entitlementsFilePath = path.join(getProjectRoot(), 'platforms', 'ios', getProjectName(), `Entitlements-${type}.plist`);
-  }
+  var entitlementsFilePath = path.join(getProjectRoot(), 'platforms', 'ios', getProjectName(), `Entitlements-${type}.plist`);
 
   return entitlementsFilePath;
 }
@@ -166,10 +161,9 @@ function getProjectRoot() {
  * @return {String} project name
  */
 function getProjectName() {
-  if (projectName === undefined) {
-    var configXmlHelper = new ConfigXmlHelper(context);
-    projectName = configXmlHelper.getProjectName();
-  }
+
+  var configXmlHelper = new ConfigXmlHelper(context);
+  var projectName = configXmlHelper.getProjectName();
 
   return projectName;
 }
