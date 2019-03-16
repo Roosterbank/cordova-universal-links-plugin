@@ -47,7 +47,7 @@ function generateEntitlements(cordovaContext, pluginPreferences) {
  *
  * @param {Object} content - data to save; JSON object that will be transformed into xml
  */
-function saveContentToEntitlementsFile(content) {
+function saveContentToEntitlementsFile(content, type) {
   var plistContent = plist.build(content);
   var filePath = pathToEntitlementsFile(type);
 

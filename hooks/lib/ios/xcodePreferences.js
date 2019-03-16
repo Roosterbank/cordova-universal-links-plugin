@@ -64,10 +64,10 @@ function activateAssociativeDomains(xcodeProject) {
 
     // if deployment target is less then the required one - increase it
     if (buildSettings['IPHONEOS_DEPLOYMENT_TARGET']) {
-      if (compare(buildSettings['IPHONEOS_DEPLOYMENT_TARGET'], IOS_DEPLOYMENT_TARGET) == -1) {
-        buildSettings['IPHONEOS_DEPLOYMENT_TARGET'] = IOS_DEPLOYMENT_TARGET;
-        deploymentTargetIsUpdated = true;
-      }
+      // if (compare(buildSettings['IPHONEOS_DEPLOYMENT_TARGET'], IOS_DEPLOYMENT_TARGET) == -1) {
+      //   buildSettings['IPHONEOS_DEPLOYMENT_TARGET'] = IOS_DEPLOYMENT_TARGET;
+      //   deploymentTargetIsUpdated = true;
+      // }
     } else {
       buildSettings['IPHONEOS_DEPLOYMENT_TARGET'] = IOS_DEPLOYMENT_TARGET;
       deploymentTargetIsUpdated = true;
@@ -216,12 +216,5 @@ function projectRoot() {
   return context.opts.projectRoot;
 }
 
-function pathToEntitlementsFile() {
-  var configXmlHelper = new ConfigXmlHelper(context),
-    projectName = configXmlHelper.getProjectName(),
-    fileName = projectName + '.entitlements';
-
-  return path.join(projectName, fileName);
-}
 
 // endregion
