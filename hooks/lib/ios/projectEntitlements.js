@@ -32,10 +32,13 @@ module.exports = {
 function generateEntitlements(cordovaContext, pluginPreferences) {
   context = cordovaContext;
 
-  var currentEntitlements = getEntitlementsFileContent();
-  var newEntitlements = injectPreferences(currentEntitlements, pluginPreferences);
+  var currentEntitlementsDebug   = getEntitlementsFileContent( "Debug" );
+  var currentEntitlementsRelease = getEntitlementsFileContent( "Release" );
+  var newEntitlementsDebug       = injectPreferences( currentEntitlementsDebug, pluginPreferences );
+  var newEntitlementsRelease     = injectPreferences( currentEntitlementsRelease, pluginPreferences );
 
-  saveContentToEntitlementsFile(newEntitlements);
+  saveContentToEntitlementsFile( newEntitlementsDebug, "Debug" );
+  saveContentToEntitlementsFile( newEntitlementsRelease, "Release" );
 }
 
 // endregion
@@ -47,9 +50,9 @@ function generateEntitlements(cordovaContext, pluginPreferences) {
  *
  * @param {Object} content - data to save; JSON object that will be transformed into xml
  */
-function saveContentToEntitlementsFile(content) {
+function saveContentToEntitlementsFile(content, type = "Debug") {
   var plistContent = plist.build(content);
-  var filePath = pathToEntitlementsFile();
+  var filePath = pathToEntitlementsFile(type);
 
   // ensure that file exists
   mkpath.sync(path.dirname(filePath));
@@ -63,8 +66,8 @@ function saveContentToEntitlementsFile(content) {
  *
  * @return {String} entitlements file content
  */
-function getEntitlementsFileContent() {
-  var pathToFile = pathToEntitlementsFile();
+function getEntitlementsFileContent(type = "Debug") {
+  var pathToFile = pathToEntitlementsFile(type);
   var content;
 
   try {
@@ -140,9 +143,9 @@ function domainsListEntryForHost(host) {
  *
  * @return {String} absolute path to entitlements file
  */
-function pathToEntitlementsFile() {
+function pathToEntitlementsFile(type = "Debug") {
   if (entitlementsFilePath === undefined) {
-    entitlementsFilePath = path.join(getProjectRoot(), 'platforms', 'ios', getProjectName(), getProjectName() + '.entitlements');
+    entitlementsFilePath = path.join(getProjectRoot(), 'platforms', 'ios', getProjectName(), `Entitlements-${type}.plist`);
   }
 
   return entitlementsFilePath;
