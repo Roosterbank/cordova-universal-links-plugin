@@ -52,7 +52,7 @@ function enableAssociativeDomainsCapability(cordovaContext) {
  */
 function activateAssociativeDomains(xcodeProject) {
   var configurations = nonComments(xcodeProject.pbxXCBuildConfigurationSection());
-  var entitlementsFilePath = pathToEntitlementsFile();
+  // var entitlementsFilePath = pathToEntitlementsFile();
   var config;
   var buildSettings;
   var deploymentTargetIsUpdated;
@@ -78,7 +78,7 @@ function activateAssociativeDomains(xcodeProject) {
     console.log('IOS project now has deployment target set as: ' + IOS_DEPLOYMENT_TARGET);
   }
 
-  console.log('IOS project Code Sign Entitlements now set to: ' + entitlementsFilePath);
+  // console.log('IOS project Code Sign Entitlements now set to: ' + entitlementsFilePath);
 }
 
 // endregion
@@ -91,16 +91,16 @@ function activateAssociativeDomains(xcodeProject) {
  * @param {Object} xcodeProject - xcode project preferences; all changes are made in that instance
  */
 function addPbxReference(xcodeProject) {
-  var fileReferenceSection = nonComments(xcodeProject.pbxFileReferenceSection());
-  var entitlementsFileName = path.basename(pathToEntitlementsFile());
-
-  if (isPbxReferenceAlreadySet(fileReferenceSection, entitlementsFileName)) {
-    console.log('Entitlements file is in reference section.');
-    return;
-  }
-
-  console.log('Entitlements file is not in references section, adding it');
-  xcodeProject.addResourceFile(entitlementsFileName);
+  // var fileReferenceSection = nonComments(xcodeProject.pbxFileReferenceSection());
+  // var entitlementsFileName = path.basename(pathToEntitlementsFile());
+  //
+  // if (isPbxReferenceAlreadySet(fileReferenceSection, entitlementsFileName)) {
+  //   console.log('Entitlements file is in reference section.');
+  //   return;
+  // }
+  //
+  // console.log('Entitlements file is not in references section, adding it');
+  // xcodeProject.addResourceFile(entitlementsFileName);
 }
 
 /**
@@ -110,21 +110,21 @@ function addPbxReference(xcodeProject) {
  * @param {String} entitlementsRelativeFilePath - relative path to entitlements file
  * @return true - if reference is set; otherwise - false
  */
-function isPbxReferenceAlreadySet(fileReferenceSection, entitlementsRelativeFilePath) {
-  var isAlreadyInReferencesSection = false;
-  var uuid;
-  var fileRefEntry;
-
-  for (uuid in fileReferenceSection) {
-    fileRefEntry = fileReferenceSection[uuid];
-    if (fileRefEntry.path && fileRefEntry.path.indexOf(entitlementsRelativeFilePath) > -1) {
-      isAlreadyInReferencesSection = true;
-      break;
-    }
-  }
-
-  return isAlreadyInReferencesSection;
-}
+// function isPbxReferenceAlreadySet(fileReferenceSection, entitlementsRelativeFilePath) {
+//   var isAlreadyInReferencesSection = false;
+//   var uuid;
+//   var fileRefEntry;
+//
+//   for (uuid in fileReferenceSection) {
+//     fileRefEntry = fileReferenceSection[uuid];
+//     if (fileRefEntry.path && fileRefEntry.path.indexOf(entitlementsRelativeFilePath) > -1) {
+//       isAlreadyInReferencesSection = true;
+//       break;
+//     }
+//   }
+//
+//   return isAlreadyInReferencesSection;
+// }
 
 // region Xcode project file helpers
 

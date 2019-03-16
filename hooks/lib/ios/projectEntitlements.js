@@ -50,7 +50,7 @@ function generateEntitlements(cordovaContext, pluginPreferences) {
  *
  * @param {Object} content - data to save; JSON object that will be transformed into xml
  */
-function saveContentToEntitlementsFile(content, type = "Debug") {
+function saveContentToEntitlementsFile(content) {
   var plistContent = plist.build(content);
   var filePath = pathToEntitlementsFile(type);
 
@@ -66,7 +66,7 @@ function saveContentToEntitlementsFile(content, type = "Debug") {
  *
  * @return {String} entitlements file content
  */
-function getEntitlementsFileContent(type = "Debug") {
+function getEntitlementsFileContent(type) {
   var pathToFile = pathToEntitlementsFile(type);
   var content;
 
@@ -143,7 +143,7 @@ function domainsListEntryForHost(host) {
  *
  * @return {String} absolute path to entitlements file
  */
-function pathToEntitlementsFile(type = "Debug") {
+function pathToEntitlementsFile(type) {
   if (entitlementsFilePath === undefined) {
     entitlementsFilePath = path.join(getProjectRoot(), 'platforms', 'ios', getProjectName(), `Entitlements-${type}.plist`);
   }
