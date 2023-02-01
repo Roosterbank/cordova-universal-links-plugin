@@ -13,13 +13,12 @@ var xcode = require('xcode');
 var shelljs = require('shelljs');
 var compare = require('node-version-compare');
 var ConfigXmlHelper = require('../configXmlHelper.js');
-var IOS_DEPLOYMENT_TARGET = '8.0';
 var COMMENT_KEY = /_comment$/;
 var context;
 
 module.exports = {
-  enableAssociativeDomainsCapability: enableAssociativeDomainsCapability
-}
+  enableAssociativeDomainsCapability: enableAssociativeDomainsCapability,
+};
 
 // region Public API
 
@@ -30,16 +29,9 @@ module.exports = {
  */
 function enableAssociativeDomainsCapability(cordovaContext) {
   context = cordovaContext;
-
   var projectFile = loadProjectFile();
-
-  // adjust preferences
   activateAssociativeDomains(projectFile.xcode);
 
-  // add entitlements file to pbxfilereference
-  // addPbxReference(projectFile.xcode);
-
-  // save changes
   projectFile.write();
 }
 
@@ -56,79 +48,16 @@ function enableAssociativeDomainsCapability(cordovaContext) {
  */
 function activateAssociativeDomains(xcodeProject) {
   var configurations = nonComments(xcodeProject.pbxXCBuildConfigurationSection());
-  // var entitlementsFilePath = pathToEntitlementsFile();
   var config;
   var buildSettings;
-  var deploymentTargetIsUpdated;
 
   for (config in configurations) {
     buildSettings = configurations[config].buildSettings;
-    // buildSettings['CODE_SIGN_ENTITLEMENTS'] = '"' + entitlementsFilePath + '"';
-    buildSettings.CODE_SIGN_ENTITLEMENTS = "\"$(PROJECT_DIR)/$(PROJECT_NAME)/Entitlements-$(CONFIGURATION).plist\""
-
-    // if deployment target is less then the required one - increase it
-    if (buildSettings['IPHONEOS_DEPLOYMENT_TARGET']) {
-      // if (compare(buildSettings['IPHONEOS_DEPLOYMENT_TARGET'], IOS_DEPLOYMENT_TARGET) == -1) {
-      //   buildSettings['IPHONEOS_DEPLOYMENT_TARGET'] = IOS_DEPLOYMENT_TARGET;
-      //   deploymentTargetIsUpdated = true;
-      // }
-    } else {
-      buildSettings['IPHONEOS_DEPLOYMENT_TARGET'] = IOS_DEPLOYMENT_TARGET;
-      deploymentTargetIsUpdated = true;
-    }
+    buildSettings.CODE_SIGN_ENTITLEMENTS = '"$(PROJECT_DIR)/$(PROJECT_NAME)/Entitlements-$(CONFIGURATION).plist"';
   }
-
-  if (deploymentTargetIsUpdated) {
-    console.log('IOS project now has deployment target set as: ' + IOS_DEPLOYMENT_TARGET);
-  }
-
-  // console.log('IOS project Code Sign Entitlements now set to: ' + entitlementsFilePath);
 }
 
 // endregion
-
-// region PBXReference methods
-
-/**
- * Add .entitlemets file into the project.
- *
- * @param {Object} xcodeProject - xcode project preferences; all changes are made in that instance
- */
-function addPbxReference(xcodeProject) {
-  // var fileReferenceSection = nonComments(xcodeProject.pbxFileReferenceSection());
-  // var entitlementsFileName = path.basename(pathToEntitlementsFile());
-  //
-  // if (isPbxReferenceAlreadySet(fileReferenceSection, entitlementsFileName)) {
-  //   console.log('Entitlements file is in reference section.');
-  //   return;
-  // }
-  //
-  // console.log('Entitlements file is not in references section, adding it');
-  // xcodeProject.addResourceFile(entitlementsFileName);
-}
-
-/**
- * Check if .entitlemets file reference already set.
- *
- * @param {Object} fileReferenceSection - PBXFileReference section
- * @param {String} entitlementsRelativeFilePath - relative path to entitlements file
- * @return true - if reference is set; otherwise - false
- */
-// function isPbxReferenceAlreadySet(fileReferenceSection, entitlementsRelativeFilePath) {
-//   var isAlreadyInReferencesSection = false;
-//   var uuid;
-//   var fileRefEntry;
-//
-//   for (uuid in fileReferenceSection) {
-//     fileRefEntry = fileReferenceSection[uuid];
-//     if (fileRefEntry.path && fileRefEntry.path.indexOf(entitlementsRelativeFilePath) > -1) {
-//       isAlreadyInReferencesSection = true;
-//       break;
-//     }
-//   }
-//
-//   return isAlreadyInReferencesSection;
-// }
 
 // region Xcode project file helpers
 
@@ -140,52 +69,39 @@ function addPbxReference(xcodeProject) {
 function loadProjectFile() {
   var platform_ios;
   var projectFile;
-  
-  try {
-      // try pre-5.0 cordova structure
-      platform_ios = context.requireCordovaModule('cordova-lib/src/plugman/platforms')['ios'];
-      projectFile = platform_ios.parseProjectFile(iosPlatformPath());
-  } catch (e) {
-      try {
-          // let's try cordova 5.0 structure
-          platform_ios = context.requireCordovaModule('cordova-lib/src/plugman/platforms/ios');
-          projectFile = platform_ios.parseProjectFile(iosPlatformPath());
-      } catch (e) {
-          // Then cordova 7.0
-          var project_files = glob.sync(path.join(iosPlatformPath(), '*.xcodeproj', 'project.pbxproj'));
-          
-          if (project_files.length === 0) {
-              throw new Error('does not appear to be an xcode project (no xcode project file)');
-          }
-          
-          var pbxPath = project_files[0];
-          
-          var xcodeproj = xcode.project(pbxPath);
-          xcodeproj.parseSync();
-          
-          projectFile = {
-              'xcode': xcodeproj,
-              write: function () {
-              var frameworks_file = path.join(iosPlatformPath(), 'frameworks.json');
-              var frameworks = {};
-              try {
-                  frameworks = context.requireCordovaModule(frameworks_file);
-              } catch (e) { }
-              
-              fs.writeFileSync(pbxPath, xcodeproj.writeSync());
-                  if (Object.keys(frameworks).length === 0){
-                      // If there is no framework references remain in the project, just remove this file
-                      shelljs.rm('-rf', frameworks_file);
-                      return;
-                  }
-                  fs.writeFileSync(frameworks_file, JSON.stringify(this.frameworks, null, 4));
-              }
-          };
-      }
+
+  var project_files = glob.sync(path.join(iosPlatformPath(), '*.xcodeproj', 'project.pbxproj'));
+
+  if (project_files.length === 0) {
+    throw new Error('does not appear to be an xcode project (no xcode project file)');
   }
-  
+
+  var pbxPath = project_files[0];
+
+  var xcodeproj = xcode.project(pbxPath);
+  xcodeproj.parseSync();
+
+  projectFile = {
+    xcode: xcodeproj,
+    write: function () {
+      var frameworks_file = path.join(iosPlatformPath(), 'frameworks.json');
+      var frameworks = {};
+      try {
+        frameworks = context.requireCordovaModule(frameworks_file);
+      } catch (e) {}
+
+      fs.writeFileSync(pbxPath, xcodeproj.writeSync());
+      if (Object.keys(frameworks).length === 0) {
+        // If there is no framework references remain in the project, just remove this file
+        shelljs.rm('-rf', frameworks_file);
+        return;
+      }
+      fs.writeFileSync(frameworks_file, JSON.stringify(this.frameworks, null, 4));
+    },
+  };
+
   return projectFile;
-  } 
+}
 
 /**
  * Remove comments from the file.
@@ -217,6 +133,5 @@ function iosPlatformPath() {
 function projectRoot() {
   return context.opts.projectRoot;
 }
-
 
 // endregion

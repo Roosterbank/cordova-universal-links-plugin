@@ -1,16 +1,14 @@
 var exec = require('cordova/exec'),
   channel = require('cordova/channel'),
-
   // Reference name for the plugin
   PLUGIN_NAME = 'UniversalLinks',
-
   // Default event name that is used by the plugin
   DEFAULT_EVENT_NAME = 'didLaunchAppFromLink';
 
 // Plugin methods on the native side that can be called from JavaScript
 pluginNativeMethod = {
   SUBSCRIBE: 'jsSubscribeForEvent',
-  UNSUBSCRIBE: 'jsUnsubscribeFromEvent'
+  UNSUBSCRIBE: 'jsUnsubscribeFromEvent',
 };
 
 var universalLinks = {
@@ -22,7 +20,7 @@ var universalLinks = {
   /**
    * Initialize the deeplink
    */
-  initialize: function() {
+  initialize: function () {
     var options = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
     this.host = options.host || this.host;
     this.eventName = options.eventName || this.eventName;
@@ -33,19 +31,23 @@ var universalLinks = {
   /**
    * Bind Event Listeners
    */
-  bindEvents: function() {
+  bindEvents: function () {
     var _this = this;
-    document.addEventListener('deviceready', function() {
-      _this.onDeviceReady();
-    }, false);
+    document.addEventListener(
+      'deviceready',
+      function () {
+        _this.onDeviceReady();
+      },
+      false
+    );
   },
 
   /**
    *  deviceready Event Handler
    */
-  onDeviceReady: function() {
+  onDeviceReady: function () {
     var _this = this;
-    this.subscribe(_this.eventName, function(event) {
+    this.subscribe(_this.eventName, function (event) {
       _this.didLaunchAppFromLink(event);
     });
   },
@@ -53,15 +55,15 @@ var universalLinks = {
   /**
    *  store deeplink event
    */
-  didLaunchAppFromLink: function(eventData) {
+  didLaunchAppFromLink: function (eventData) {
     this.dpLink = eventData;
-    console.log('Did launch application from the link: ' ,eventData)
+    console.log('cordova-plugin-deeplinks: did launch application from the link: ', eventData);
   },
 
   /**
    * validates the host and uses the regular expression to extract the value from the deeplink
    */
-  validateDeeplink: function() {
+  validateDeeplink: function () {
     var regex = this.regex;
     var host = this.host;
     if (host) {
@@ -70,7 +72,8 @@ var universalLinks = {
     }
     if (regex) {
       this.dpLink['regex'] = regex;
-      this.dpLink['value'] = this.dpLink.url.match(regex) || this.dpLink.hash.match(regex) || this.dpLink.path.match(regex);
+      this.dpLink['value'] =
+        this.dpLink.url.match(regex) || this.dpLink.hash.match(regex) || this.dpLink.path.match(regex);
     }
   },
 
@@ -80,14 +83,13 @@ var universalLinks = {
    * @param {number} milliseconds - Optional. The number of milliseconds to wait before executing the code. If omitted, the value 0 is used
    */
   checkDeepLink: function (milliseconds) {
-      var _this = this;
-      return new Promise(function (resolve, reject) {
-          setTimeout(function () {
-              if (_this.dpLink)
-                _this.validateDeeplink()
-              resolve(_this.dpLink);
-          }, milliseconds || 0);
-      });
+    var _this = this;
+    return new Promise(function (resolve, reject) {
+      setTimeout(function () {
+        if (_this.dpLink) _this.validateDeeplink();
+        resolve(_this.dpLink);
+      }, milliseconds || 0);
+    });
   },
 
   /**
@@ -97,9 +99,9 @@ var universalLinks = {
    * @param {String} eventName - name of the event you are subscribing on; if null - default plugin event is used
    * @param {Function} callback - callback that is called when event is captured
    */
-  subscribe: function(eventName, callback) {
+  subscribe: function (eventName, callback) {
     if (!callback) {
-      console.warn('Universal Links: can\'t subscribe to event without a callback');
+      console.warn("Universal Links: can't subscribe to event without a callback");
       return;
     }
 
@@ -107,7 +109,7 @@ var universalLinks = {
       eventName = DEFAULT_EVENT_NAME;
     }
 
-    var innerCallback = function(msg) {
+    var innerCallback = function (msg) {
       callback(msg.data);
     };
 
@@ -119,13 +121,13 @@ var universalLinks = {
    *
    * @param {String} eventName - from what event we are unsubscribing
    */
-  unsubscribe: function(eventName) {
+  unsubscribe: function (eventName) {
     if (!eventName) {
       eventName = DEFAULT_EVENT_NAME;
     }
 
     exec(null, null, PLUGIN_NAME, pluginNativeMethod.UNSUBSCRIBE, [eventName]);
-  }
+  },
 };
 
 if (!window.plugins) {

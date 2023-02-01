@@ -6,7 +6,7 @@ var ConfigXmlHelper = require('./configXmlHelper.js');
 var DEFAULT_SCHEME = 'http';
 
 module.exports = {
-  readPreferences: readPreferences
+  readPreferences: readPreferences,
 };
 
 // region Public API
@@ -21,14 +21,14 @@ function readPreferences(cordovaContext) {
   // read data from projects root config.xml file
   var configXml = new ConfigXmlHelper(cordovaContext).read();
   if (configXml == null) {
-    console.warn('config.xml not found! Please, check that it exist\'s in your project\'s root directory.');
+    console.warn("config.xml not found! Please, check that it exists in your project's root directory.");
     return null;
   }
 
   // look for data from the <universal-links> tag
   var ulXmlPreferences = configXml.widget['universal-links'];
-  if (ulXmlPreferences == null || ulXmlPreferences.length == 0) {
-    console.warn('<universal-links> tag is not set in the config.xml. Universal Links plugin is not going to work.');
+  if (ulXmlPreferences == null || ulXmlPreferences.length === 0) {
+    console.warn('universal-links tag is not set in the config.xml. Universal Links plugin is not going to work.');
     return null;
   }
 
@@ -39,10 +39,11 @@ function readPreferences(cordovaContext) {
 
   // read ios team ID
   var iosTeamId = getTeamIdPreference(xmlPreferences);
-
+  var iosDevMode = getIosDevModePreference(xmlPreferences);
   return {
-    'hosts': hosts,
-    'iosTeamId': iosTeamId
+    hosts: hosts,
+    iosTeamId: iosTeamId,
+    iosDevMode: iosDevMode,
   };
 }
 
@@ -53,6 +54,14 @@ function readPreferences(cordovaContext) {
 function getTeamIdPreference(xmlPreferences) {
   if (xmlPreferences.hasOwnProperty('ios-team-id')) {
     return xmlPreferences['ios-team-id'][0]['$']['value'];
+  }
+
+  return null;
+}
+
+function getIosDevModePreference(xmlPreferences) {
+  if (xmlPreferences.hasOwnProperty('ios-dev-mode')) {
+    return xmlPreferences['ios-dev-mode'][0]['$']['value'];
   }
 
   return null;
@@ -69,11 +78,11 @@ function constructHostsList(xmlPreferences) {
 
   // look for defined hosts
   var xmlHostList = xmlPreferences['host'];
-  if (xmlHostList == null || xmlHostList.length == 0) {
+  if (xmlHostList == null || xmlHostList.length === 0) {
     return [];
   }
 
-  xmlHostList.forEach(function(xmlElement) {
+  xmlHostList.forEach(function (xmlElement) {
     var host = constructHostEntry(xmlElement);
     if (host) {
       hostsList.push(host);
@@ -91,13 +100,13 @@ function constructHostsList(xmlPreferences) {
  */
 function constructHostEntry(xmlElement) {
   var host = {
-      scheme: DEFAULT_SCHEME,
-      name: '',
-      paths: []
-    };
+    scheme: DEFAULT_SCHEME,
+    name: '',
+    paths: [],
+  };
   var hostProperties = xmlElement['$'];
 
-  if (hostProperties == null || hostProperties.length == 0) {
+  if (hostProperties == null || hostProperties.length === 0) {
     return null;
   }
 
@@ -127,7 +136,7 @@ function constructPaths(xmlElement) {
   }
 
   var paths = [];
-  xmlElement.path.some(function(pathElement) {
+  xmlElement.path.some(function (pathElement) {
     var url = pathElement['$']['url'];
 
     // Ignore explicit paths if '*' is defined

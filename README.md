@@ -234,6 +234,17 @@ will result into
 
 This is iOS-only preference, Android doesn't need it.
 
+### ios-dev-mode
+
+In iOS 14 Apple added a CDN to take care of the download and management of site association files. Sometimes, however, you may need to have the app directly download the site-association file as before. This is possible by adding `?mode=developer` to the applink.
+
+Adding the following tag under `<universal-links>` will do that:
+```xml
+<ios-dev-mode value="false"/>
+```
+
+This is iOS-only preference, Android doesn't need it.
+
 #### Prevent Android from creating multiple app instances
 
 When clicking on a universal link from another App (typically from an email client), Android will likely create a new instance of your app, even if it is already loaded in memory. It may even create a new instance with each click, resulting in many instances of your app in the task switcher. See details in [issue #37](https://github.com/nordnet/cordova-universal-links-plugin/issues/37).
