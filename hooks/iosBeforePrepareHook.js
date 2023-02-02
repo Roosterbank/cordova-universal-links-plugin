@@ -8,7 +8,7 @@ var path = require('path');
 var fs = require('fs');
 var ConfigXmlHelper = require('./lib/configXmlHelper.js');
 
-module.exports = function(ctx) {
+module.exports = function (ctx) {
   run(ctx);
 };
 
@@ -25,15 +25,17 @@ function run(ctx) {
 
   var oldProjectName = getOldProjectName(iosProjectFilePath);
 
-  // if name has not changed - do nothing
   if (oldProjectName.length && oldProjectName === newProjectName) {
     return;
   }
 
-  console.log('Project name has changed. Renaming .entitlements file.');
-
-  // if it does - rename it
-  var oldEntitlementsFilePath = path.join(iosProjectFilePath, oldProjectName, 'Resources', oldProjectName + '.entitlements');
+  console.log('cordova-plugin-deeplinks: project name has changed. Renaming .entitlements file.');
+  var oldEntitlementsFilePath = path.join(
+    iosProjectFilePath,
+    oldProjectName,
+    'Resources',
+    oldProjectName + '.entitlements'
+  );
   var newEntitlementsFilePath = path.join(iosProjectFilePath, oldProjectName, newProjectName + '.entitlements');
 
   try {
@@ -62,7 +64,7 @@ function getOldProjectName(projectDir) {
   }
 
   var projectFile = '';
-  files.forEach(function(fileName) {
+  files.forEach(function (fileName) {
     if (path.extname(fileName) === '.xcodeproj') {
       projectFile = path.basename(fileName, '.xcodeproj');
     }

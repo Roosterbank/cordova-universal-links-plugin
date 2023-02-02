@@ -7,7 +7,7 @@ var xml2js = require('xml2js');
 
 module.exports = {
   readXmlAsJson: readXmlAsJson,
-  writeJsonAsXml: writeJsonAsXml
+  writeJsonAsXml: writeJsonAsXml,
 };
 
 /**
@@ -24,7 +24,7 @@ function readXmlAsJson(filePath) {
   try {
     xmlData = fs.readFileSync(filePath, 'utf8');
     xmlParser = new xml2js.Parser();
-    xmlParser.parseString(xmlData, function(err, data) {
+    xmlParser.parseString(xmlData, function (err, data) {
       if (data) {
         parsedData = data;
       }
@@ -49,7 +49,7 @@ function writeJsonAsXml(jsData, filePath, options) {
   try {
     fs.writeFileSync(filePath, changedXmlData, 'utf8');
   } catch (err) {
-    console.log(err);
+    console.log('cordova-plugin-deeplinks.writeJsonAsXml', err);
     isSaved = false;
   }
 
