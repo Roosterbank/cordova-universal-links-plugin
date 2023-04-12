@@ -33,7 +33,6 @@ function readPreferences(cordovaContext) {
   }
 
   var xmlPreferences = ulXmlPreferences[0];
-
   // read hosts
   var hosts = constructHostsList(xmlPreferences);
 
@@ -52,7 +51,7 @@ function readPreferences(cordovaContext) {
 // region Private API
 
 function getTeamIdPreference(xmlPreferences) {
-  if (xmlPreferences.hasOwnProperty('ios-team-id')) {
+  if (xmlPreferences['ios-team-id']) {
     return xmlPreferences['ios-team-id'][0]['$']['value'];
   }
 
@@ -60,7 +59,7 @@ function getTeamIdPreference(xmlPreferences) {
 }
 
 function getIosDevModePreference(xmlPreferences) {
-  if (xmlPreferences.hasOwnProperty('ios-dev-mode')) {
+  if (xmlPreferences['ios-dev-mode']) {
     return xmlPreferences['ios-dev-mode'][0]['$']['value'];
   }
 
