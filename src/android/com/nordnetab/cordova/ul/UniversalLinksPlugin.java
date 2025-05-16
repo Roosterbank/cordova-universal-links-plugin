@@ -5,6 +5,8 @@ import android.net.Uri;
 import android.text.TextUtils;
 import android.util.Log;
 
+import androidx.appcompat.app.AppCompatActivity;
+
 import com.nordnetab.cordova.ul.js.JSAction;
 import com.nordnetab.cordova.ul.model.JSMessage;
 import com.nordnetab.cordova.ul.model.ULHost;
@@ -43,16 +45,15 @@ public class UniversalLinksPlugin extends CordovaPlugin {
     // region Public API
 
     @Override
-    public void initialize(CordovaInterface cordova, CordovaWebView webView) {
-        super.initialize(cordova, webView);
+    protected void pluginInitialize() {
+      AppCompatActivity activity = cordova.getActivity();
+      supportedHosts = new ULConfigXmlParser(activity).parse();
 
-        supportedHosts = new ULConfigXmlParser(cordova.getActivity()).parse();
+      if (subscribers == null) {
+          subscribers = new HashMap<String, CallbackContext>();
+      }
 
-        if (subscribers == null) {
-            subscribers = new HashMap<String, CallbackContext>();
-        }
-
-        handleIntent(cordova.getActivity().getIntent());
+      handleIntent(activity.getIntent());
     }
 
     @Override
