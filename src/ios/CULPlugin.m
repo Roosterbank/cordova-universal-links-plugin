@@ -20,23 +20,27 @@
 
 @end
 
+// Static pointer to hold the launch activity across early initialization
+static NSUserActivity *sPendingUserActivity = nil;
+
 @implementation CULPlugin
+
++ (void)setPendingUserActivity:(NSUserActivity *)userActivity {
+    sPendingUserActivity = userActivity;
+}
 
 #pragma mark Public API
 
 - (void)pluginInitialize {
     [self localInit];
-    // Can be used for testing.
-    // Just uncomment, close the app and reopen it. That will simulate application launch from the link.
-//    [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(onResume:) name:UIApplicationWillEnterForegroundNotification object:nil];
-}
 
-//- (void)onResume:(NSNotification *)notification {
-//    NSUserActivity *activity = [[NSUserActivity alloc] initWithActivityType:NSUserActivityTypeBrowsingWeb];
-//    [activity setWebpageURL:[NSURL URLWithString:@"http://site2.com/news/page?q=1&v=2#myhash"]];
-//    
-//    [self handleUserActivity:activity];
-//}
+    // Consume cold-start link captured by SceneDelegate before CULPlugin was instantiated
+    if (sPendingUserActivity != nil) {
+        NSUserActivity *activity = sPendingUserActivity;
+        sPendingUserActivity = nil;
+        [self handleUserActivity:activity];
+    }
+}
 
 - (void)handleOpenURL:(NSNotification*)notification {
     id url = notification.object;
